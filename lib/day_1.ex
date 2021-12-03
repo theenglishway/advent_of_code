@@ -41,18 +41,16 @@ defmodule AdventOfCode.Day1 do
     end
   end
 
-  def run(1),
-    do:
-      into_integers_list()
-      |> count_increases()
+  @impl true
+  def run(input, 1), do: input |> count_increases()
+  def run(input, 2), do: input |> count_increases_sliding_window()
 
-  def run(2),
-    do:
-      into_integers_list()
-      |> count_increases_sliding_window()
-
-  defp into_integers_list() do
+  @impl true
+  def get_input() do
     with {:ok, data} <- File.read(@input),
          do: data |> String.split() |> Enum.map(&String.to_integer/1)
   end
+
+  @impl true
+  def do_output(res), do: res
 end

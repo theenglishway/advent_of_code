@@ -104,22 +104,18 @@ defmodule AdventOfCode.Day3 do
 
   def pairwise_sum(nb1, nb2), do: nb1 |> Enum.zip_with(nb2, &(&1 + &2))
 
-  def run(1),
-    do:
-      get_input()
-      |> FirstHalf.get_gamma_and_epsilon()
-      |> to_output()
+  @impl true
+  def run(input, 1), do: input |> FirstHalf.get_gamma_and_epsilon()
 
-  def run(2),
-    do:
-      get_input()
-      |> SecondHalf.get_oxygen_and_co2()
-      |> to_output()
+  @impl true
+  def run(input, 2), do: input |> SecondHalf.get_oxygen_and_co2()
 
-  defp get_input() do
+  @impl true
+  def get_input() do
     with {:ok, data} <- File.read(@input),
          do: data |> String.split("\n", trim: true)
   end
 
-  defp to_output({gamma, epsilon}), do: gamma * epsilon
+  @impl true
+  def do_output({gamma, epsilon}), do: gamma * epsilon
 end

@@ -49,22 +49,16 @@ defmodule AdventOfCode.Day2 do
     defp apply_instruction({pos, depth, aim}, {:up, val}), do: {pos, depth, aim - val}
   end
 
-  def run(1),
-    do:
-      get_input()
-      |> FirstHalf.get_position_and_depth()
-      |> to_output()
+  @impl true
+  def run(input, 1), do: input |> FirstHalf.get_position_and_depth()
+  def run(input, 2), do: input |> SecondHalf.get_position_and_depth()
 
-  def run(2),
-    do:
-      get_input()
-      |> SecondHalf.get_position_and_depth()
-      |> to_output()
-
-  defp get_input() do
+  @impl true
+  def get_input() do
     with {:ok, data} <- File.read(@input),
          do: data |> String.split("\n", trim: true)
   end
 
-  defp to_output({pos, depth}), do: pos * depth
+  @impl true
+  def do_output({pos, depth}), do: pos * depth
 end
