@@ -1,6 +1,6 @@
 defmodule AdventOfCode.Day1 do
   @behaviour AdventOfCode.Exercise
-  @input "lib/day_1.txt"
+  @input "lib/day_01.txt"
 
   @doc """
     iex> AdventOfCode.Day1.count_increases([199,200,208,210,200,207,240,269,260,263])

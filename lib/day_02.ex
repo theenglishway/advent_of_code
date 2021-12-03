@@ -1,6 +1,6 @@
 defmodule AdventOfCode.Day2 do
   @behaviour AdventOfCode.Exercise
-  @input "lib/day_2.txt"
+  @input "lib/day_02.txt"
 
   defmodule FirstHalf do
     @doc """
