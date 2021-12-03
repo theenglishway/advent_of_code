@@ -1,4 +1,5 @@
 defmodule AdventOfCode.Day3 do
+  @behaviour AdventOfCode.Exercise
   @input "lib/day_3.txt"
   alias __MODULE__
 

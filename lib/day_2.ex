@@ -1,4 +1,5 @@
 defmodule AdventOfCode.Day2 do
+  @behaviour AdventOfCode.Exercise
   @input "lib/day_2.txt"
 
   defmodule FirstHalf do
