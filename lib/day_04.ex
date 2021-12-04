@@ -4,8 +4,8 @@ defmodule AdventOfCode.Day4.Bingo do
 
   defguard is_card_row(row) when is_list(row) and is_card_cell(hd(row))
   defguard is_card(game) when is_list(game) and is_card_row(hd(game))
-  defguard is_list_of_cards(games) when is_list(games) and is_card(hd(games))
-  defguard is_ball_list(list) when is_list(list) and is_integer(hd(list))
+  defguard is_list_of_cards(games) when games == [] or (is_list(games) and is_card(hd(games)))
+  defguard is_ball_list(list) when list == [] or (is_list(list) and is_integer(hd(list)))
   defguard is_bingo(bingo) when is_ball_list(hd(bingo)) and is_list_of_cards(hd(tl(bingo)))
 
   def play(bingo) when is_bingo(bingo) do
@@ -13,10 +13,17 @@ defmodule AdventOfCode.Day4.Bingo do
       {_, [[] | [_cards]]} ->
         :empty_ball_list
 
-      {latest_ball, bingo = [_ | [cards]]} ->
+      {_, [_ | []]} ->
+        :empty_cards_list
+
+      {latest_ball, bingo = [balls | [cards]]} ->
         case cards |> Enum.filter(&is_winning?/1) do
-          [] -> {:new_round, bingo, latest_ball}
-          [winning_card] -> {:win, bingo, latest_ball, winning_card}
+          [] ->
+            {:new_round, bingo, latest_ball}
+
+          winning_cards ->
+            {:win, [balls, cards |> Enum.reject(&(&1 in winning_cards))], latest_ball,
+             winning_cards}
         end
     end
   end
@@ -35,6 +42,16 @@ defmodule AdventOfCode.Day4.Bingo do
         row |> Enum.reject(&is_marked?/1) |> Enum.map(&elem(&1, 0)) |> Enum.sum()
       end)
       |> Enum.sum()
+
+  def init_empty(_bingo = [ball_list | [cards]]),
+    do:
+      [ball_list] ++
+        [
+          cards
+          |> Enum.map(fn card ->
+            card |> Enum.map(fn row -> row |> Enum.map(fn cell -> {cell, false} end) end)
+          end)
+        ]
 
   defp mark_cells(card, ball) when is_card(card), do: card |> Enum.map(&mark_cells(&1, ball))
   defp mark_cells(row, ball) when is_card_row(row), do: row |> Enum.map(&mark_cells(&1, ball))
@@ -68,27 +85,41 @@ defmodule AdventOfCode.Day4 do
         {:new_round, bingo, _} ->
           bingo |> get_sum_and_latest()
 
-        {:win, _bingo, latest_ball, winning_card} ->
+        {:win, _bingo, latest_ball, [winning_card]} ->
           {winning_card |> Bingo.card_score(), latest_ball}
       end
     end
 
-    def get_sum_and_latest(_bingo = [ball_list | [cards]]) do
-      bingo =
-        [ball_list] ++
-          [
-            cards
-            |> Enum.map(fn card ->
-              card |> Enum.map(fn row -> row |> Enum.map(fn cell -> {cell, false} end) end)
-            end)
-          ]
+    def get_sum_and_latest(bingo), do: bingo |> Bingo.init_empty() |> get_sum_and_latest()
+  end
 
-      bingo |> get_sum_and_latest()
+  defmodule SecondHalf do
+    require AdventOfCode.Day4.Bingo
+    alias AdventOfCode.Day4.Bingo
+
+    def get_sum_and_latest(bingo, wins \\ [])
+
+    def get_sum_and_latest(bingo, wins) when Bingo.is_bingo(bingo) do
+      case bingo |> Bingo.play() do
+        {:new_round, bingo, _} ->
+          bingo |> get_sum_and_latest(wins)
+
+        {:win, bingo, latest_ball, new_winning_cards} ->
+          bingo |> get_sum_and_latest(wins ++ (new_winning_cards |> Enum.map(&{&1, latest_ball})))
+
+        :empty_ball_list ->
+          {last_winning_card, ball} = wins |> List.last()
+          {last_winning_card |> Bingo.card_score(), ball}
+      end
     end
+
+    def get_sum_and_latest(bingo, wins),
+      do: bingo |> Bingo.init_empty() |> get_sum_and_latest(wins)
   end
 
   @impl true
   def run(input, 1), do: input |> FirstHalf.get_sum_and_latest()
+  def run(input, 2), do: input |> SecondHalf.get_sum_and_latest()
 
   @impl true
   def get_input() do
