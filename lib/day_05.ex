@@ -42,12 +42,14 @@ end
 defmodule AdventOfCode.Day5.VentLine do
   def is_vertical?({:vent_line, {_, x1, _}, {_, x2, _}}), do: x1 == x2
   def is_horizontal?({:vent_line, {_, _, y1}, {_, _, y2}}), do: y1 == y2
+  def is_diagonal?({:vent_line, {_, x1, y1}, {_, x2, y2}}), do: abs(x2 - x1) == abs(y2 - y1)
   def is_straight?(line), do: is_vertical?(line) or is_horizontal?(line)
 
   def points_covered(line = {:vent_line, {_, x1, y1}, {_, x2, y2}}) do
     cond do
       is_horizontal?(line) -> for x <- x1..x2, do: {x, y1}
       is_vertical?(line) -> for y <- y1..y2, do: {x1, y}
+      is_diagonal?(line) -> for x <- x1..x2, y <- y1..y2, abs(x - x1) == abs(y - y1), do: {x, y}
       true -> raise "Can not get coverage for non-straight line"
     end
   end
@@ -72,8 +74,24 @@ defmodule AdventOfCode.Day5 do
     end
   end
 
+  defmodule SecondHalf do
+    alias AdventOfCode.Day5.{Grid, VentLine}
+
+    def get_number_of_overlaps(vent_lines) do
+      grid = vent_lines |> Grid.new()
+
+      covered_grid =
+        vent_lines
+        |> Enum.filter(&(VentLine.is_straight?(&1) or VentLine.is_diagonal?(&1)))
+        |> Enum.reduce(grid, &Grid.cover_with_line(&2, &1))
+
+      covered_grid |> Grid.number_of_points_with_coverage_over(2)
+    end
+  end
+
   @impl true
   def run(input, 1), do: input |> FirstHalf.get_number_of_overlaps()
+  def run(input, 2), do: input |> SecondHalf.get_number_of_overlaps()
 
   @impl true
   def get_input() do

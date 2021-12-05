@@ -1,7 +1,7 @@
 defmodule AdventOfCodeDay5Test do
   use ExUnit.Case
   alias AdventOfCode.Day5
-  alias AdventOfCode.Day5.FirstHalf
+  alias AdventOfCode.Day5.{FirstHalf, SecondHalf}
   doctest FirstHalf
 
   @input """
@@ -19,5 +19,9 @@ defmodule AdventOfCodeDay5Test do
 
   test "should work on first half" do
     assert @input |> Day5.into_vents_lines() |> FirstHalf.get_number_of_overlaps() == 5
+  end
+
+  test "should work on second half" do
+    assert @input |> Day5.into_vents_lines() |> SecondHalf.get_number_of_overlaps() == 12
   end
 end
