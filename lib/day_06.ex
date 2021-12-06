@@ -3,11 +3,11 @@ defmodule AdventOfCode.Day6.Fish do
     {updated, tail} =
       list
       |> Enum.reduce({[], []}, fn
-        0, {current, new_tail} -> {current ++ [6], new_tail ++ [8]}
-        element, {current, new_tail} -> {current ++ [element - 1], new_tail}
+        0, {current, new_tail} -> {[6 | current], [8 | new_tail]}
+        element, {current, new_tail} -> {[element - 1 | current], new_tail}
       end)
 
-    updated ++ tail
+    (updated |> Enum.reverse()) ++ tail
   end
 end
 
@@ -16,28 +16,24 @@ defmodule AdventOfCode.Day6 do
   @input "lib/day_06.txt"
   alias AdventOfCode.Day6.Fish
 
-  defmodule FirstHalf do
-    @doc """
+  @doc """
 
-      iex> AdventOfCode.Day6.FirstHalf.get_number_of_fishes([3,4,3,1,2], 18)
-      26
-    """
-    def get_number_of_fishes(fishes_day0, nb_days) do
-      1..nb_days
-      |> Enum.reduce(fishes_day0, fn elem, acc ->
-        Fish.to_next_day(acc) |> IO.inspect(label: elem)
-      end)
-      |> Enum.count()
-    end
-  end
-
-  defmodule SecondHalf do
-    def get_number_of_fishes(fishes_day0, nb_days) do
-    end
+    iex> AdventOfCode.Day6.get_number_of_fishes([3,4,3,1,2], 18)
+    26
+    iex> AdventOfCode.Day6.get_number_of_fishes([3,4,3,1,2], 256)
+    26984457539
+  """
+  def get_number_of_fishes(fishes_day0, nb_days) do
+    1..nb_days
+    |> Enum.reduce(fishes_day0, fn elem, acc ->
+      Fish.to_next_day(acc) |> IO.inspect(label: elem)
+    end)
+    |> Enum.count()
   end
 
   @impl true
-  def run(input, 1), do: input |> FirstHalf.get_number_of_fishes(80)
+  def run(input, 1), do: input |> get_number_of_fishes(80)
+  def run(input, 2), do: input |> get_number_of_fishes(256)
 
   @impl true
   def get_input() do
