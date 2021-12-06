@@ -1,5 +1,27 @@
 defmodule AdventOfCode.Day6.Fish do
   def to_next_day(list) when is_list(list) do
+    new_ = list |> new_fishes()
+    (list |> update_list()) ++ new_
+  end
+
+  defp into_map(list) do
+    list |> Enum.group_by(& &1) |> Map.new(fn {k, v} -> {k, v |> Enum.count()})
+  end
+
+  defp update_list(current) do
+    current
+    |> Enum.map(fn
+      0 -> 6
+      element -> element - 1
+    end)
+  end
+
+  defp new_fishes(current) do
+    nb = current |> Enum.count(&(&1 == 0))
+    Stream.cycle([8]) |> Enum.take(nb)
+  end
+
+  def to_next_day(list) when is_list(list) do
     {updated, tail} =
       list
       |> Enum.reduce({[], []}, fn
