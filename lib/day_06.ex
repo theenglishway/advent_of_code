@@ -1,36 +1,16 @@
 defmodule AdventOfCode.Day6.Fish do
-  def to_next_day(list) when is_list(list) do
-    new_ = list |> new_fishes()
-    (list |> update_list()) ++ new_
-  end
+  def to_next_day(list) when is_list(list), do: list |> into_map |> to_next_day()
 
-  defp into_map(list) do
-    list |> Enum.group_by(& &1) |> Map.new(fn {k, v} -> {k, v |> Enum.count()})
-  end
+  def to_next_day(map) when is_map(map),
+    do:
+      map
+      |> Map.drop([0, 7])
+      |> Map.new(fn {k, v} when k != 0 and k != 7 -> {k - 1, v} end)
+      |> Map.put(6, (map |> Map.get(7, 0)) + (map |> Map.get(0, 0)))
+      |> Map.put(8, map |> Map.get(0, 0))
 
-  defp update_list(current) do
-    current
-    |> Enum.map(fn
-      0 -> 6
-      element -> element - 1
-    end)
-  end
-
-  defp new_fishes(current) do
-    nb = current |> Enum.count(&(&1 == 0))
-    Stream.cycle([8]) |> Enum.take(nb)
-  end
-
-  def to_next_day(list) when is_list(list) do
-    {updated, tail} =
-      list
-      |> Enum.reduce({[], []}, fn
-        0, {current, new_tail} -> {[6 | current], [8 | new_tail]}
-        element, {current, new_tail} -> {[element - 1 | current], new_tail}
-      end)
-
-    (updated |> Enum.reverse()) ++ tail
-  end
+  def into_map(list),
+    do: list |> Enum.group_by(& &1) |> Map.new(fn {k, v} -> {k, v |> Enum.count()} end)
 end
 
 defmodule AdventOfCode.Day6 do
@@ -47,10 +27,9 @@ defmodule AdventOfCode.Day6 do
   """
   def get_number_of_fishes(fishes_day0, nb_days) do
     1..nb_days
-    |> Enum.reduce(fishes_day0, fn elem, acc ->
-      Fish.to_next_day(acc) |> IO.inspect(label: elem)
-    end)
-    |> Enum.count()
+    |> Enum.reduce(fishes_day0, fn _elem, acc -> Fish.to_next_day(acc) end)
+    |> Map.values()
+    |> Enum.sum()
   end
 
   @impl true
