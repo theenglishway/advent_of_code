@@ -18,4 +18,19 @@ defmodule AdventOfCodeDay8Test do
   test "should work on first half" do
     assert @input |> Day8.format_input() |> Day8.get_simple_digits_count() == 26
   end
+
+  test "should work on second half" do
+    assert @input |> Day8.format_input() |> Day8.get_actual_representation() == [
+             8394,
+             9781,
+             1197,
+             9361,
+             4873,
+             8418,
+             4548,
+             1625,
+             8717,
+             4315
+           ]
+  end
 end
