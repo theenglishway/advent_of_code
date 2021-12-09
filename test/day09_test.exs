@@ -11,6 +11,12 @@ defmodule AdventOfCodeDay9Test do
   """
 
   test "should work on first half" do
-    assert @input |> Day9.format_input() |> Day9.get_low_points() |> Enum.sort() == [1, 2, 6, 6]
+    assert @input |> Day9.format_input() |> Day9.get_low_points_heights() |> Enum.sort() == [
+             1,
+             2,
+             6,
+             6
+           ]
+  end
   end
 end

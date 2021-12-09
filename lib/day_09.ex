@@ -2,26 +2,31 @@ defmodule AdventOfCode.Day9 do
   @behaviour AdventOfCode.Exercise
   @input "lib/day_09.txt"
 
-  def get_low_points(input) do
-    input
-    |> with_neighbours()
-    |> Stream.filter(fn {{_, height0}, neighbours} ->
-      neighbours |> Enum.all?(fn {_, height} -> height > height0 end)
-    end)
-    |> Enum.map(fn {{_, height0}, _} -> height0 + 1 end)
-  end
+  def get_low_points(input),
+    do:
+      input
+      |> with_neighbours()
+      |> Stream.filter(fn {{_, height0}, neighbours} ->
+        neighbours |> Enum.all?(fn {_, height} -> height > height0 end)
+      end)
 
-  def with_neighbours(full_map) do
-    full_map
-    |> Stream.map(fn v0 = {{x0, y0}, _} ->
-      neighbours = [{x0 + 1, y0}, {x0 - 1, y0}, {x0, y0 + 1}, {x0, y0 - 1}]
-      {v0, full_map |> Map.take(neighbours)}
-    end)
-  end
+  def get_low_points_heights(input),
+    do:
+      input
+      |> get_low_points()
+      |> Enum.map(fn {{_, height0}, _} -> height0 + 1 end)
+
+  def with_neighbours(full_map),
+    do:
+      full_map
+      |> Stream.map(fn v0 = {{x0, y0}, _} ->
+        neighbours = [{x0 + 1, y0}, {x0 - 1, y0}, {x0, y0 + 1}, {x0, y0 - 1}]
+        {v0, full_map |> Map.take(neighbours)}
+      end)
   end
 
   @impl true
-  def run(input, 1), do: input |> get_low_points()
+  def run(input, 1), do: input |> get_low_points_heights() |> Enum.sum()
 
   @impl true
   def get_input() do
