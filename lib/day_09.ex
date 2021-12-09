@@ -4,18 +4,20 @@ defmodule AdventOfCode.Day9 do
 
   def get_low_points(input) do
     input
-    |> Stream.filter(fn {{x0, y0}, _} -> is_lower_than_neighbours?(input, x0, y0) end)
-    |> Enum.map(fn {_, height} -> height + 1 end)
+    |> with_neighbours()
+    |> Stream.filter(fn {{_, height0}, neighbours} ->
+      neighbours |> Enum.all?(fn {_, height} -> height > height0 end)
+    end)
+    |> Enum.map(fn {{_, height0}, _} -> height0 + 1 end)
   end
 
-  defp is_lower_than_neighbours?(full_map, x0, y0) do
-    height0 = full_map |> Map.get({x0, y0})
-
+  def with_neighbours(full_map) do
     full_map
-    |> Stream.filter(fn {{x, y}, _} ->
-      (x == x0 and abs(y - y0) == 1) or (abs(x - x0) == 1 and y == y0)
+    |> Stream.map(fn v0 = {{x0, y0}, _} ->
+      neighbours = [{x0 + 1, y0}, {x0 - 1, y0}, {x0, y0 + 1}, {x0, y0 - 1}]
+      {v0, full_map |> Map.take(neighbours)}
     end)
-    |> Enum.all?(fn {_, height} -> height > height0 end)
+  end
   end
 
   @impl true
