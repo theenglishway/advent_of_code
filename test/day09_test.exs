@@ -18,5 +18,8 @@ defmodule AdventOfCodeDay9Test do
              6
            ]
   end
+
+  test "should work on second half" do
+    assert @input |> Day9.format_input() |> Day9.get_basins() |> Enum.sort() == [9, 9, 14]
   end
 end

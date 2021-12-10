@@ -25,10 +25,20 @@ defmodule AdventOfCode.Day9 do
     neighbours = [{x0 + 1, y0}, {x0 - 1, y0}, {x0, y0 + 1}, {x0, y0 - 1}]
     full_map |> Map.take(neighbours)
   end
+
+  def get_basins(input) do
+    low_points = input |> get_low_points() |> Stream.map(fn {{coords, _}, _} -> coords end)
+
+    low_points |> Enum.map(&find_basin_from(&1, input))
+  end
+
+  def find_basin_from(low_point, full_input) do
+    low_point
   end
 
   @impl true
   def run(input, 1), do: input |> get_low_points_heights() |> Enum.sum()
+  def run(input, 2), do: input |> get_basins()
 
   @impl true
   def get_input() do
@@ -50,5 +60,5 @@ defmodule AdventOfCode.Day9 do
       |> Map.new(fn %{x: x, y: y, height: val} -> {{x, y}, val} end)
 
   @impl true
-  def do_output(list), do: list |> Enum.sum()
+  def do_output(list), do: list |> inspect
 end
