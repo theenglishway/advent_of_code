@@ -19,10 +19,12 @@ defmodule AdventOfCode.Day9 do
   def with_neighbours(full_map),
     do:
       full_map
-      |> Stream.map(fn v0 = {{x0, y0}, _} ->
-        neighbours = [{x0 + 1, y0}, {x0 - 1, y0}, {x0, y0 + 1}, {x0, y0 - 1}]
-        {v0, full_map |> Map.take(neighbours)}
-      end)
+      |> Stream.map(fn v0 -> {v0, full_map |> get_neighbours(v0)} end)
+
+  defp get_neighbours(full_map, {{x0, y0}, _}) do
+    neighbours = [{x0 + 1, y0}, {x0 - 1, y0}, {x0, y0 + 1}, {x0, y0 - 1}]
+    full_map |> Map.take(neighbours)
+  end
   end
 
   @impl true
